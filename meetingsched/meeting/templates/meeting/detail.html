@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ meeting.name }}{% endblock %}
+
+{% block content %}
+    <div class="px-6 py-4 {% if meeting.is_complete == True %}bg-teal-100{% else %}bg-gray-100{% endif %} rounded-xl"> 
+        <div class="mb-6 flex justify-between items-center">
+            <div class="flex space-x-3 items-center">
+                <a href="/" class="hover:text-teal-500"><i class="fa-solid fa-arrow-left"></i></a>
+                <h1 class="text-2xl font-semibold">{{ meeting.name }}</h1>
+            </div>
+            <div class="flex justify-end space-x-2">
+                {% if meeting.is_complete == False %}
+                    <a href="{% url 'meeting:complete' meeting.id %}" class="text-base font-semibold hover:text-teal-700"><i class="fa-solid fa-check"></i></a>
+                {% else %}
+                {% endif %}
+                {% if request.user == meeting.created_by %}
+                    <a href="{% url 'meeting:delete' meeting.id %}" class="text-base font-semibold hover:text-red-700"><i class="fa-solid fa-trash"></i></a>
+                {% endif %}            
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="py-3 px-5 bg-white rounded-xl"> 
+            <p><b>Date: </b>{{ meeting.date|date:'d/m/Y' }}</p>
+            <p><b>Starts at: </b>{{ meeting.start_time }}</p>
+            <p><b>Ends at: </b>{{ meeting.end_time }}</p>
+            <p><b>Location: </b>{{ meeting.location }}</p>
+            <p><b>Agenda: </b>{{ meeting.agenda }}</p>
+            <div class="flex space-x-1">
+                <p><b>Participants: </b></p>
+                {% for participant in meeting.participants.all %}
+                    <p>{{ participant.username }}</p>
+                    {% if not forloop.last %},{% endif %}
+                {% endfor %}                         
+            </div>
+            <p><b>Host: </b>{{ meeting.created_by }}</p>
+        </div>
+    </div>
+{% endblock %}

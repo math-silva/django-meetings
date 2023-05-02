@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% if user.is_authenticated and user.is_staff %}
+    {% block title %}User Management{% endblock %}
+
+    {% block content %}
+        
+        <div class="px-6 py-4 bg-gray-100 rounded-xl"> 
+            <div class="mb-6 flex justify-between items-center">
+                <div class="flex space-x-3 items-center">
+                    <a href="/" class="hover:text-teal-500"><i class="fa-solid fa-arrow-left"></i></a>
+                    <h1 class="text-2xl font-semibold">User Management</h1>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="py-3 px-5 bg-white rounded-xl"> 
+                {% for user in users %}
+                    <div class="flex justify-between items-center"> 
+                        <div class="flex justify-end items-center space-x-1">
+                            <p class="font-semibold">ID: </p>
+                            <p>{{ user.id }}</p>
+                        </div>
+                        {% if user.is_staff == False %}
+                            <a href="{% url 'core:remove_user' user.pk %}" class="text-base font-semibold hover:text-red-700"><i class="fa-solid fa-trash"></i></a>
+                        {% else %}
+                            <p class="font-semibold">Admin</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <p class="font-semibold">User: </p>
+                        <p>{{ user.username }}</p>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <p class="font-semibold">Email: </p>
+                        <p>{{ user.email }}</p>
+                    </div>
+                    {% if not forloop.last %}<hr class="my-4">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock %}
+{% else %}
+  <p>You are not authorized to view this page.</p>
+{% endif %}

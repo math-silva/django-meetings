@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Meetings{% endblock %}
+
+{% block content %}
+    <div class="px-6 py-4 bg-gray-100 rounded-xl">
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-semibold hover:text-teal-500">Meetings</h2>
+            <div class="flex flex-col space-y-2 items-center">
+                <div class="flex space-x-2 items-center"> 
+                    <h2 class="text-xl font-semibold">{{current_date|date:'d/m/Y'}}</h2>
+                    {% comment %} <a href="" class="text-base font-semibold hover:text-teal-500"></a> {% endcomment %}
+                </div>
+                <div class="flex space-x-8 items-center"> 
+                    <a href="{% url 'core:date' 'prev' %}" class="text-base font-semibold hover:text-teal-500"><i class="fa-solid fa-angles-left"></i></a>
+                    <i class="fa-solid fa-calendar-days hover:text-teal-500"></i>
+                    <a href="{% url 'core:date' 'next' %}" class="text-base font-semibold hover:text-teal-500"><i class="fa-solid fa-angles-right"></i></a>
+                </div>
+            </div>
+            
+            <a href="{% url 'meeting:new' %}" class="text-base font-semibold hover:text-teal-500"><i class="fa-solid fa-plus"></i> New Meeting</a>
+        </div>
+        <hr class="my-4">
+        <div class="grid grid-rows-10 gap-2">
+            {% for meeting in meetings %}
+                {% if meeting.date|date:'d/m/Y' == current_date|date:'d/m/Y' %}
+                    <div>
+                        <a href="{% url 'meeting:detail' meeting.id %}">
+                            <div class="py-3 px-5 rounded-xl {% if meeting.is_complete == True %}bg-teal-100{% else %}bg-white hover:bg-teal-100{% endif %}">
+                                <div class="flex justify-between">
+                                    <h2 class="text-xl font-semibold">{{ meeting.name }}</h2>
+                                    <h2 class="pb-1 font-semibold">{{ meeting.date|date:'d/m/Y' }}</h2>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex justify-end space-x-1">
+                                        <p>Host:</p>
+                                        <p class="text-gray-500">{{ meeting.created_by }}</p>
+                                    </div>
+                                    <div class="flex justify-end space-x-1">
+                                        <p>Time:</p>
+                                        <p class="text-gray-500">{{ meeting.start_time }} - {{ meeting.end_time }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between">
+                                    <div class="flex space-x-1">
+                                        <p>Participants:</p>
+                                        {% for participant in meeting.participants.all %}
+                                            <p class="text-gray-500">{{ participant.username }}</p>
+                                            {% if not forloop.last %},{% endif %}
+                                        {% endfor %}                         
+                                    </div>
+                                    <div class="flex justify-end space-x-2">
+                                        {% if meeting.is_complete == False %}
+                                            <a href="{% url 'meeting:complete' meeting.id %}" class="text-base font-semibold hover:text-teal-700"><i class="fa-solid fa-check"></i></a>
+                                        {% endif %}
+                                        {% if request.user == meeting.created_by %}
+                                            <a href="{% url 'meeting:delete' meeting.id %}" class="text-base font-semibold hover:text-red-700"><i class="fa-solid fa-trash"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
